@@ -6,7 +6,7 @@
 /*   By: maridos- <maridos-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/31 14:58:30 by maridos-          #+#    #+#             */
-/*   Updated: 2026/07/31 15:57:33 by maridos-         ###   ########.fr       */
+/*   Updated: 2026/08/01 23:15:21 by maridos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,16 @@
 # define BUFFER_SIZE 42
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <fcntl.h> 
-#include <unistd.h> 
+#include <unistd.h>
 
 char *get_next_line(int fd);
 
-
+typedef struct f_list {
+    char *str;
+    struct f_list *next;
+} t_list;
 
 
 #endif
