@@ -6,26 +6,30 @@
 /*   By: maridos- <maridos-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/31 14:58:30 by maridos-          #+#    #+#             */
-/*   Updated: 2026/08/01 23:15:21 by maridos-         ###   ########.fr       */
+/*   Updated: 2026/08/05 17:26:35 by maridos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-# define BUFFER_SIZE 42
+# define BUFFER_SIZE 3
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h> 
 #include <unistd.h>
 
+size_t	ft_strlen(const char *s);
+void *ft_calloc(size_t nmemb, size_t size);
 char *get_next_line(int fd);
+size_t	ft_strlcpy(char *dest, const char *src, size_t dest_size);
+char	*ft_strjoin(char const *s1, char const *s2);
 
-typedef struct f_list {
-    char *str;
-    struct f_list *next;
-} t_list;
+// typedef struct f_list {
+//     char *str;
+//     struct f_list *next;
+// } t_list;
 
 
 #endif
