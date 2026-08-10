@@ -3,17 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maridos- <maridos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: maridos- <maridos-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/31 14:58:30 by maridos-          #+#    #+#             */
-/*   Updated: 2026/08/05 17:26:35 by maridos-         ###   ########.fr       */
+/*   Updated: 2026/08/09 00:30:16 by maridos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-# define BUFFER_SIZE 3
+# define BUFFER_SIZE 5
+# define CHARACTER '\n'
 
 #include <stdio.h>
 #include <stdlib.h>

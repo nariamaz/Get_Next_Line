@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maridos- <maridos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: maridos- <maridos-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/31 15:04:30 by maridos-          #+#    #+#             */
-/*   Updated: 2026/08/05 17:05:45 by maridos-         ###   ########.fr       */
+/*   Updated: 2026/08/08 23:34:04 by maridos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,13 @@
 
 void *ft_calloc(size_t nmemb, size_t size)
 {
-	void	*ptr;
+	void*	ptr;
     unsigned int i;
     char*   cast_ptr;
 
     i = 0;
-    cast_ptr = (char*) ptr;
+	ptr = NULL;
+	cast_ptr = NULL;
 	if (nmemb && size > (size_t)-1 / nmemb)
 		return (NULL);
 	if (nmemb == 0 || size == 0)
@@ -30,13 +31,11 @@ void *ft_calloc(size_t nmemb, size_t size)
 		return (ptr);
 	}
 	ptr = malloc(nmemb * size);
+	cast_ptr = (char*) ptr;
 	if (ptr == NULL)
 		return (NULL);
     while (i < size)
-    {
-        cast_ptr[i] = '\0';
-        i++;
-    }    
+        cast_ptr[i++] = '\0';  
 	return (ptr);
 }
 size_t	ft_strlcpy(char *dest, const char *src, size_t dest_size)
@@ -61,31 +60,30 @@ size_t	ft_strlcpy(char *dest, const char *src, size_t dest_size)
 	dest[len_copy] = '\0';
 	return (src_size);
 }
-char	*ft_strjoin(char const *s1, char const *s2)
+
+char *ft_strjoin(char const *s1, char const *s2)
 {
-	size_t	total_size;
 	size_t	i;
 	size_t	j;
+	size_t	len1;
 	char	*string;
 
-	if (!s1 || !s2)
+	len1 = 0;
+	if (s1)
+		len1 = ft_strlen(s1);
+	if (!s2)
 		return (NULL);
-	total_size = (ft_strlen(s1) + ft_strlen(s2));
-	string = ft_calloc(total_size + 1, sizeof(char));
+	string = ft_calloc((len1 + ft_strlen(s2)) + 1, sizeof(char));
 	if (!string)
 		return (NULL);
 	i = 0;
-	while (s1[i] != '\0')
+	if (s1)
 	{
-		string[i] = s1[i];
-		i++;
+		while ((string[i] = s1[i]))
+			i++;
 	}
 	j = 0;
-	while (s2[j] != '\0')
-	{
-		string[i] = s2[j];
-		i++;
-		j++;
-	}
+	while ((string[i++] = s2[j++]))
+		;
 	return (string);
 }
