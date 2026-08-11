@@ -6,7 +6,7 @@
 /*   By: maridos- <maridos-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/31 15:04:16 by maridos-          #+#    #+#             */
-/*   Updated: 2026/08/11 15:03:06 by maridos-         ###   ########.fr       */
+/*   Updated: 2026/08/11 18:16:49 by maridos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,59 +44,68 @@ char *ft_read_and_search(int fd, char* buf_read, char** cache)
         buf_read[bytes_read] = '\0';
         if (bytes_read == 0)
             break;
-        pos_char = str_search (buf_read);
         tmp_cache = ft_strjoin(*cache, buf_read);
         if (!tmp_cache)
             return (NULL);
-        free (*cache);
         *cache = tmp_cache;   
+        pos_char = str_search(*cache);
     }
-    
-    return (ft_extract_line(cache, pos_char, buf_read));
-
-  
+    if (pos_char < 0)
+        return (ft_flush_cache(cache));
+    return (ft_extract_line(cache, pos_char));
 }
 
-char *ft_extract_line(char **cache, int newline, char* buf_read)
+char *ft_extract_line(char **cache, int newline)
 {
-    char* tmp_cache;
+    char *line;
+
+    line = ft_build_line(cache, newline);
+    if (!line)
+        return (NULL);
+    if (!ft_build_rest(cache, newline))
+    {
+        free(line);
+        return (NULL);
+    }
+    return (line);
+}
+
+char *ft_build_line(char **cache, int newline)
+{
+    char *line;
     int i;
-    int j;
-    char* line;
-    int len_cache;
-    
-    j = ft_strlen(*cache) - ft_strlen(buf_read);
-    line = ft_calloc(newline +1, sizeof(char));
+
+    line = ft_calloc(newline + 2, sizeof(char));
     if (!line)
         return (NULL);
     i = 0;
     while (i <= newline)
     {
-        line[j + i] = *cache[j + i];
+        line[i] = (*cache)[i];
         i++;
     }
-   len_cache = ft_strlen(buf_read - newline);
-   tmp_cache = malloc(len_cache);
-   i = 0;
-   while (i++ < len_cache)
-       tmp_cache[i] = *cache[j + i];
-   free(cache);
-   *cache = tmp_cache;
-   return (line);
+    return (line);
 }
 
-int str_search(char *str)
+char *ft_build_rest(char **cache, int newline)
 {
-    int position;
+    char *rest;
     int i;
+    int j;
 
-    position = -1;
     i = 0;
-    while (str[i] != '\0')
+    while ((*cache)[newline + 1 + i])
+        i++;
+    rest = ft_calloc(i + 1, sizeof(char));
+    if (!rest)
+        return (NULL);
+    j = 0;
+    while (j < i)
     {
-        if (str[i] == CHARACTER)
-            position = i;    
-        i++; 
+        rest[j] = (*cache)[newline + 1 + j];
+        j++;
     }
-    return (position);
+    free(*cache);
+    *cache = rest;
+    return (rest);
 }
