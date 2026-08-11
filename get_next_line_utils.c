@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maridos- <maridos-@student.42sp.org.br>    +#+  +:+       +#+        */
+/*   By: maridos- <maridos-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/31 15:04:30 by maridos-          #+#    #+#             */
-/*   Updated: 2026/08/08 23:34:04 by maridos-         ###   ########.fr       */
+/*   Updated: 2026/08/10 20:36:31 by maridos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,15 +65,9 @@ char *ft_strjoin(char const *s1, char const *s2)
 {
 	size_t	i;
 	size_t	j;
-	size_t	len1;
 	char	*string;
 
-	len1 = 0;
-	if (s1)
-		len1 = ft_strlen(s1);
-	if (!s2)
-		return (NULL);
-	string = ft_calloc((len1 + ft_strlen(s2)) + 1, sizeof(char));
+	string = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!string)
 		return (NULL);
 	i = 0;
@@ -86,4 +80,16 @@ char *ft_strjoin(char const *s1, char const *s2)
 	while ((string[i++] = s2[j++]))
 		;
 	return (string);
+}
+
+size_t	ft_strlen(const char *s)
+{
+	int	i;
+
+	if (!s)
+		return (0);
+	i = 0;
+	while (s[i] != '\0')
+		i++;
+	return (i);
 }
