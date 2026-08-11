@@ -6,14 +6,17 @@
 /*   By: maridos- <maridos-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/31 14:58:30 by maridos-          #+#    #+#             */
-/*   Updated: 2026/08/11 17:41:10 by maridos-         ###   ########.fr       */
+/*   Updated: 2026/08/11 19:09:49 by maridos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
+#ifndef BUFFER_SIZE
 # define BUFFER_SIZE 10
+# endif
+
 # define CHARACTER '\n'
 
 #include <stdio.h>
