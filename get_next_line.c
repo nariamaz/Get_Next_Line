@@ -6,112 +6,97 @@
 /*   By: maridos- <maridos-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/31 15:04:16 by maridos-          #+#    #+#             */
-/*   Updated: 2026/08/10 21:00:39 by maridos-         ###   ########.fr       */
+/*   Updated: 2026/08/11 15:03:06 by maridos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <stdlib.h>
 
-
-char	*ft_strjoin_free(char *buffer_rest, char *buffer)
-{
-	char	*result;
-
-	if (buffer == NULL)
-		return (buffer_rest);
-	result = ft_strjoin(buffer_rest, buffer);
-	free(buffer_rest);
-	return (result);
-}
-
 char *get_next_line(int fd)
 {
-    static char* accumulator;
+    static char* cache;
     char* buf_read;
-    int pos_character;
-    char* str_char;
     char* str_return;
 
+    if (fd < 0 || BUFFER_SIZE <= 0)
+        return (NULL);
     buf_read = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
     if (!buf_read)
         return (NULL);
-    if (fd < 0 || BUFFER_SIZE <= 0)
-        return (NULL);
-        
-    pos_character = ft_read_and_search(fd, buf_read);
-    while (pos_character < 0)
-    {
-        accumulator = ft_strjoin_free(accumulator, buf_read);
-        //free (buf_read);
-        pos_character = ft_read_and_search (fd, buf_read);
-    }
-    str_return = ft_strjoin (str_return, accumulator);
-    &str_return[ultimo indice] = ft_extract_line (buf_read, (pos_character + 2));
-
-    free (accumulator);
-// get_leftover
+    str_return = ft_read_and_search(fd, buf_read, &cache);
+    free(buf_read);
     return (str_return);
 }
 
-int ft_read_and_search(int fd, char* buf_read)
+char *ft_read_and_search(int fd, char* buf_read, char** cache)
 {
     int bytes_read;
-    int char_pos;
-    int i;
+    char* tmp_cache;
+    int pos_char;
     
-    char_pos = 0;
-    bytes_read = (read (fd, buf_read, (BUFFER_SIZE)));
-    if (bytes_read <= 0)
+    pos_char = -1;
+    while (pos_char < 0)
     {
-        free (buf_read);
-        return (0);
+        bytes_read = (read (fd, buf_read, (BUFFER_SIZE)));
+        if (bytes_read < 0)
+            return (NULL);
+        buf_read[bytes_read] = '\0';
+        if (bytes_read == 0)
+            break;
+        pos_char = str_search (buf_read);
+        tmp_cache = ft_strjoin(*cache, buf_read);
+        if (!tmp_cache)
+            return (NULL);
+        free (*cache);
+        *cache = tmp_cache;   
     }
-    char_pos = -1;
+    
+    return (ft_extract_line(cache, pos_char, buf_read));
+
+  
+}
+
+char *ft_extract_line(char **cache, int newline, char* buf_read)
+{
+    char* tmp_cache;
+    int i;
+    int j;
+    char* line;
+    int len_cache;
+    
+    j = ft_strlen(*cache) - ft_strlen(buf_read);
+    line = ft_calloc(newline +1, sizeof(char));
+    if (!line)
+        return (NULL);
     i = 0;
-    while (buf_read[i] != '\0')
+    while (i <= newline)
     {
-        if (buf_read[i] == CHARACTER)
-            char_pos = i;    
+        line[j + i] = *cache[j + i];
+        i++;
+    }
+   len_cache = ft_strlen(buf_read - newline);
+   tmp_cache = malloc(len_cache);
+   i = 0;
+   while (i++ < len_cache)
+       tmp_cache[i] = *cache[j + i];
+   free(cache);
+   *cache = tmp_cache;
+   return (line);
+}
+
+int str_search(char *str)
+{
+    int position;
+    int i;
+
+    position = -1;
+    i = 0;
+    while (str[i] != '\0')
+    {
+        if (str[i] == CHARACTER)
+            position = i;    
         i++; 
     }
-    return (char_pos);    
+    return (position);
 }
-
-char *ft_extract_line (char *src, size_t nmeb)
-{
-    char* dest;
-    int i;
-    
-    dest = ft_calloc(nmeb, sizeof(char));
-    i = 0;
-    while (i < nmeb)
-	{
-		dest[i] = src[i];
-		i++;
-	}
-	dest[nmeb] = '\0';
-	return (dest);
-}
-    
-
-
-
-
-    
-
-// int str_search(char *str)
-// {
-//     int position;
-//     int i;
-
-//     position = -1;
-//     i = 0;
-//     while (str[i] != '\0')
-//     {
-//         if (str[i] == CHARACTER)
-//             position = i;    
-//         i++; 
-//     }
-//     return (position);
-// }
