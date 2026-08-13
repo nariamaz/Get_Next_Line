@@ -6,7 +6,7 @@
 /*   By: maridos- <maridos-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/31 15:04:16 by maridos-          #+#    #+#             */
-/*   Updated: 2026/08/12 22:39:16 by maridos-         ###   ########.fr       */
+/*   Updated: 2026/08/12 22:53:25 by maridos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ char *ft_read_and_search(int fd, char* buf_read, char** cache)
     char* tmp_cache;
     int pos_char;
     
-    //pos_char = -1;
     pos_char = str_search(*cache);
     while (pos_char < 0)
     {
