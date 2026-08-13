@@ -6,7 +6,7 @@
 /*   By: maridos- <maridos-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/31 15:04:30 by maridos-          #+#    #+#             */
-/*   Updated: 2026/08/11 18:33:37 by maridos-         ###   ########.fr       */
+/*   Updated: 2026/08/12 22:38:59 by maridos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,16 +93,16 @@ size_t	ft_strlen(const char *s)
 
 int str_search(char *str)
 {
-    int position;
     int i;
 
-    position = -1;
+    if (!str)
+        return (-1);
     i = 0;
     while (str[i] != '\0')
     {
         if (str[i] == CHARACTER)
-            position = i;    
-        i++; 
+            return (i);
+        i++;
     }
-    return (position);
+    return (-1);
 }
