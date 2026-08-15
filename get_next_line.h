@@ -13,29 +13,27 @@
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-#ifndef BUFFER_SIZE
-# define BUFFER_SIZE 10
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 10
 # endif
 
 # define CHARACTER '\n'
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h> 
-#include <unistd.h>
+# include <fcntl.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
 
-char *get_next_line(int fd);
-char *ft_read_and_search(int fd, char* buf_read, char** cache);
-char *ft_extract_line(char **cache, int newline);
-char *ft_build_line(char **cache, int newline);
-char *ft_build_rest(char **cache, int newline);
-char *ft_flush_cache(char** cache);
+char	*get_next_line(int fd);
+char	*ft_read_and_search(int fd, char *buf_read, char **cache);
+char	*ft_extract_line(char **cache, int newline);
+char	*ft_build_line(char **cache, int newline);
+char	*ft_build_rest(char **cache, int newline);
+char	*ft_flush_cache(char **cache);
 
-void *ft_calloc(size_t nmemb, size_t size);
+void	*ft_calloc(size_t nmemb, size_t size);
 char	*ft_strjoin(char const *s1, char const *s2);
-int str_search(char *str);
+int		str_search(char *str);
 size_t	ft_strlen(const char *s);
-
-
 
 #endif

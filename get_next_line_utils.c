@@ -12,45 +12,45 @@
 
 #include "get_next_line.h"
 
-char *ft_flush_cache(char** cache)
+char	*ft_flush_cache(char **cache)
 {
-    char* last;
-    
-    if (*cache && (*cache)[0] != '\0')
-    {
-        last = *cache;
-        *cache = NULL;
-        return (last);
-    }
-    return (NULL);
+	char	*last;
+
+	if (*cache && (*cache)[0] != '\0')
+	{
+		last = *cache;
+		*cache = NULL;
+		return (last);
+	}
+	return (NULL);
 }
 
-void *ft_calloc(size_t nmemb, size_t size)
+void	*ft_calloc(size_t nmemb, size_t size)
 {
-    void            *ptr;
-    size_t          i;
-    char            *cast_ptr;
+	void	*ptr;
+	size_t	i;
+	char	*cast_ptr;
 
-    i = 0;
-    if (nmemb && size > (size_t)-1 / nmemb)
-        return (NULL);
-    if (nmemb == 0 || size == 0)
-    {
-        ptr = malloc(1);
-        if (ptr)
-            *(char *)ptr = '\0';
-        return (ptr);
-    }
-    ptr = malloc(nmemb * size);
-    if (ptr == NULL)
-        return (NULL);
-    cast_ptr = (char *)ptr;
-    while (i < nmemb * size)
-        cast_ptr[i++] = '\0';
-    return (ptr);
+	i = 0;
+	if (nmemb && size > (size_t)-1 / nmemb)
+		return (NULL);
+	if (nmemb == 0 || size == 0)
+	{
+		ptr = malloc(1);
+		if (ptr)
+			*(char *)ptr = '\0';
+		return (ptr);
+	}
+	ptr = malloc(nmemb * size);
+	if (ptr == NULL)
+		return (NULL);
+	cast_ptr = (char *)ptr;
+	while (i < nmemb * size)
+		cast_ptr[i++] = '\0';
+	return (ptr);
 }
 
-char *ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char const *s1, char const *s2)
 {
 	size_t	i;
 	size_t	j;
@@ -75,7 +75,7 @@ char *ft_strjoin(char const *s1, char const *s2)
 		i++;
 		j++;
 	}
-	free ((char*)s1);
+	free((char *)s1);
 	return (string);
 }
 
@@ -91,18 +91,18 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
-int str_search(char *str)
+int	str_search(char *str)
 {
-    int i;
+	int	i;
 
-    if (!str)
-        return (-1);
-    i = 0;
-    while (str[i] != '\0')
-    {
-        if (str[i] == CHARACTER)
-            return (i);
-        i++;
-    }
-    return (-1);
+	if (!str)
+		return (-1);
+	i = 0;
+	while (str[i] != '\0')
+	{
+		if (str[i] == CHARACTER)
+			return (i);
+		i++;
+	}
+	return (-1);
 }
