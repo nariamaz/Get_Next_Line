@@ -1,99 +1,194 @@
-# get_next_line
+*This project has been created as part of the 42 curriculum by maridos-.*
 
-> A 42 School project — read a line from a file descriptor, one call at a time, no matter the buffer size.
+# Get Next Line
 
-## 📋 About
+> Reading a line from a file descriptor is way too tedious.
 
-`get_next_line` implements a function that returns, on each call, the **next line** read from a given file descriptor — including the trailing `\n`, except on the last line of a file if it doesn't end with one.
+## Table of Contents
+- [Description](#description)
+- [Instructions](#instructions)
+- [Resources](#resources)
+- [Algorithm: Explanation & Justification](#algorithm-explanation--justification)
+- [Bonus](#bonus)
+- [Norm & Constraints Recap](#norm--constraints-recap)
 
-The core constraint of the project: the underlying `read()` syscall doesn't know about lines — it just returns raw bytes in chunks of `BUFFER_SIZE`. This project's job is to buffer those chunks intelligently across multiple calls so a single line can be reconstructed even if it spans several `read()`s, while never reading more from the file than necessary.
+## Description
 
-This implementation includes the **bonus part**: a single `get_next_line` can correctly and independently handle **multiple file descriptors** interleaved in any order (e.g. reading a line from `fd_a`, then `fd_b`, then back to `fd_a`) without mixing or losing data between them.
-
-## ⚙️ Function Prototype
+`get_next_line` (GNL) is a 42 School project whose goal is to write a C function
+that reads and returns, **one call at a time**, a single line from a file
+descriptor — whether that descriptor points to a regular file, a pipe, or
+standard input.
 
 ```c
 char *get_next_line(int fd);
 ```
 
-| Parameter | Description |
+Repeated calls on the same `fd` progressively return the next line of the
+underlying file, until there is nothing left to read, at which point the
+function returns `NULL`.
+
+Beyond producing an useful utility function, the project's real
+purpose is to understand **static variables** in C: how to preserve state
+between successive calls of a function without relying on global variables,
+and how to manage the memory and read-buffer that this state requires.
+
+Key constraints imposed by the subject:
+- Only `read`, `malloc`, and `free` may be used.
+- `lseek` and global variables are forbidden.
+- `libft` may not be used in this project.
+- The read buffer size is configurable at compile time via `-D BUFFER_SIZE=n`,
+  and the function must behave correctly for any value of `n` (including `1`,
+  `9999`, or `10000000`).
+- The returned line includes the trailing `\n`, except when EOF is reached
+  before a `\n` is found.
+
+## Instructions
+
+### Files
+
+**Mandatory**
+
+| File | Role |
 |---|---|
-| `fd` | File descriptor to read from |
+| `get_next_line.h` | Header — function prototype and includes |
+| `get_next_line.c` | Core logic of `get_next_line` |
+| `get_next_line_utils.c` | Helper functions (string handling, memory helpers, etc.) |
 
-**Return value:**
-- The next line read, **including** the `\n` if present.
-- `NULL` if there is nothing left to read, or an error occurred.
+**Bonus**
 
-## 🔧 Compilation
+| File | Role |
+|---|---|
+| `get_next_line_bonus.h` | Header for the bonus (multiple fd) version |
+| `get_next_line_bonus.c` | Core logic handling several file descriptors at once |
+| `get_next_line_utils_bonus.c` | Helper functions for the bonus version |
 
-The mandatory and bonus parts are compiled with different `BUFFER_SIZE` values to verify behavior at different chunk sizes. No `Makefile` is required by the subject, but here's how to compile manually:
+### Compilation
+
+No `Makefile` is required for this project — the subject compiles it
+directly with `cc`, and that's how it's built here as well.
+
+The project must compile with a `BUFFER_SIZE` value passed at compile time,
+and must also compile fine *without* that flag (a default value is defined
+in the header for that case).
 
 ```bash
 # Mandatory part
-cc -Wall -Wextra -Werror -D BUFFER_SIZE=42 get_next_line.c get_next_line_utils.c main.c -o gnl
+cc -Wall -Wextra -Werror -D BUFFER_SIZE=42 get_next_line.c get_next_line_utils.c
 
 # Bonus part (multiple file descriptors)
-cc -Wall -Wextra -Werror -D BUFFER_SIZE=42 get_next_line_bonus.c get_next_line_utils_bonus.c main.c -o gnl_bonus
+cc -Wall -Wextra -Werror -D BUFFER_SIZE=42 get_next_line_bonus.c get_next_line_utils_bonus.c
 ```
 
-`BUFFER_SIZE` is not hardcoded — it's passed via compiler flag (`-D BUFFER_SIZE=n`) and defaults to a fallback value in the header if not provided.
-
-## 📁 File Structure
-
-```
-.
-├── get_next_line.h
-├── get_next_line.c
-├── get_next_line_utils.c
-├── get_next_line_bonus.c        (bonus)
-├── get_next_line_utils_bonus.c  (bonus)
-└── README.md
-```
-
-## 🧠 How It Works
-
-1. **`get_next_line(fd)`** allocates a temporary read buffer (`buf_read`) and delegates to `ft_read_and_search`, passing a `static` cache slot dedicated to that `fd`.
-2. **`ft_read_and_search`** loops on `read(fd, buf_read, BUFFER_SIZE)`, appending each chunk to the persistent per-fd cache (`ft_strjoin`) until either:
-   - a `\n` is found (searched locally in the new chunk, then translated into a global index in the cache), or
-   - `read()` returns `0` (EOF) — in which case any leftover content is flushed as a final line via `ft_flush_cache`, or
-   - `read()` returns `< 0` (error) — the function returns `NULL` immediately.
-3. **`ft_extract_line`** splits the cache in two using `ft_build_line` (the completed line, up to and including `\n`) and `ft_build_rest` (everything after, kept for the next call).
-4. The cache persists **between calls** thanks to `static` storage, so a call to `get_next_line` picks up exactly where the previous one left off — even mid-buffer.
-
-### Multi-fd support (bonus)
-
-Instead of a single `static char *cache`, the bonus uses:
+### Usage example
 
 ```c
-static char *cache[MAX_FD];
+#include "get_next_line.h"
+#include <fcntl.h>
+#include <stdio.h>
+
+int main(void)
+{
+    int   fd;
+    char  *line;
+
+    fd = open("example.txt", O_RDONLY);
+    if (fd < 0)
+        return (1);
+    while ((line = get_next_line(fd)) != NULL)
+    {
+        printf("%s", line);
+        free(line);
+    }
+    close(fd);
+    return (0);
+}
 ```
 
-Each file descriptor gets its own independent slot (`cache[fd]`), so reading from several file descriptors in any interleaved order never mixes their content. `MAX_FD` bounds the number of simultaneously trackable file descriptors and is checked before any array access.
-
-## 🧪 Edge Cases Handled
-
-- Empty files
-- Files with no trailing `\n` on the last line
-- `BUFFER_SIZE` of `1` (byte-by-byte reads)
-- Very large `BUFFER_SIZE` (larger than the whole file)
-- Invalid `fd` (negative, or closed mid-read)
-- Multiple file descriptors read in interleaved order (bonus)
-- Repeated calls after EOF (returns `NULL` without crashing or leaking)
-
-## 🧹 Memory
-
-Tested with Valgrind for both leaks and invalid access:
+Compile it together with the GNL sources, choosing any `BUFFER_SIZE`:
 
 ```bash
-valgrind --leak-check=full --show-leak-kinds=all -s ./gnl
+cc -Wall -Wextra -Werror -D BUFFER_SIZE=32 main.c get_next_line.c get_next_line_utils.c -o gnl_test
+./gnl_test
 ```
 
-No memory is leaked across normal execution — the per-fd cache is only retained between calls as designed, and every `line` returned to the caller is expected to be `free()`'d by the caller once no longer needed.
+## Resources
 
-## 📐 Norm
+### Documentation & references
 
-Written in strict compliance with the 42 **Norminette**: max 25 lines per function, max 4 parameters, no assignments in conditions, variables declared at the top of scope, no `for` loops, no ternaries.
+- `man 2 read`, `man 3 malloc`, `man 3 free`, `man 2 open`
+- Static variables and storage duration — any standard C reference (e.g.
+  K&R, *The C Programming Language*)
+- The 42 Norm documentation (mandatory and bonus files are both norm-checked)
 
-## ✍️ Author
+### AI usage disclosure
 
-**[Your Name]** — [42 login] — [42 campus]
+AI assistance was used only to help draft and format this `README.md`
+according to the structure required by the subject. It was not used to
+write, or generate the logic inside `get_next_line.c`,
+`get_next_line_utils.c`, or the bonus files — that reasoning and code were
+worked out independently.
+
+## Algorithm: Explanation & Justification
+
+The implementation follows the classic **"static leftover buffer"**
+strategy, which satisfies the subject's requirement to read as little as
+possible on each call, rather than reading the whole file upfront:
+
+1. **Persistent state.** A `static char *buffer` (or, for the bonus, one
+   stash per file descriptor) keeps whatever was already read from `fd` but
+   not yet returned to the caller, across successive calls.
+
+2. **Reading loop.** On each call, the function first checks whether the
+   stash already contains a `\n`. If not, it repeatedly calls
+   `read(fd, buffer, BUFFER_SIZE)`, appending each chunk to the stash, until
+   either a `\n` is found, or `read` returns `0` (EOF) or `-1` (error).
+
+3. **Extracting the line.** Once a `\n` is present (or EOF has been
+   reached), the stash is split in two: the line to return (up to and
+   including the `\n`, if present) and the remainder, which becomes the new
+   stash for the next call.
+
+4. **Termination.** When `read` returns `0` and the stash is empty, any
+   remaining allocation is freed, the static variable is reset, and the
+   function returns `NULL`.
+
+5. **Multiple file descriptors (bonus).** A single static array (indexed by
+   `fd`) or a static linked list keyed by `fd` lets several descriptors be
+   read from in an interleaved fashion, without mixing up their respective
+   states.
+
+This approach was chosen because it:
+- Minimises `read` syscalls — data already consumed is never re-read.
+- Works correctly regardless of `BUFFER_SIZE`, since the stash simply grows
+  or shrinks as needed.
+- Never needs `lseek`: the file position only ever advances via `read`.
+- Keeps the state footprint to a single static variable (or a single static
+  structure for the bonus), which is what the norm and the bonus
+  requirement demand.
+
+## Bonus
+
+This project includes the bonus implementation. The bonus version:
+- Manages **multiple file descriptors at once** (e.g. fd 3, 4, 5), reading
+  from a different one on each call without losing or mixing the reading
+  state of any of them.
+- Relies on **a single static variable** overall.
+
+Build it with:
+
+```bash
+cc -Wall -Wextra -Werror -D BUFFER_SIZE=42 get_next_line_bonus.c get_next_line_utils_bonus.c
+```
+
+> Per the subject, the bonus is only assessed once the mandatory part is
+> fully functional.
+
+## Norm & Constraints Recap
+
+- Written in C, Norm-compliant (mandatory and bonus files alike).
+- No crashes (segfault, bus error, double free) outside of explicitly
+  documented undefined behavior.
+- No memory leaks.
+- Allowed functions only: `read`, `malloc`, `free`.
+- Forbidden: `lseek`, global variables, `libft`.
+- Compiles both with and without the `-D BUFFER_SIZE=n` flag.
