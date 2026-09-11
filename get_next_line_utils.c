@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maridos- <maridos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: maridos- <maridos-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/31 15:04:30 by maridos-          #+#    #+#             */
-/*   Updated: 2026/08/12 22:38:59 by maridos-         ###   ########.fr       */
+/*   Updated: 2026/09/10 16:49:23 by maridos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,16 @@ char	*ft_flush_cache(char **cache)
 {
 	char	*last;
 
-	if (*cache && (*cache)[0] != '\0')
+	if (!cache || !*cache)
+		return (NULL);
+	if ((*cache)[0] != '\0')
 	{
 		last = *cache;
 		*cache = NULL;
 		return (last);
 	}
+	free(*cache);
+	*cache = NULL;
 	return (NULL);
 }
 

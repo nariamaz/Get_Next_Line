@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maridos- <maridos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: maridos- <maridos-@student.42sp.org.br>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/31 15:04:16 by maridos-          #+#    #+#             */
-/*   Updated: 2026/08/13 16:12:18 by maridos-         ###   ########.fr       */
+/*   Updated: 2026/09/10 16:39:36 by maridos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ char	*ft_extract_line(char **cache, int newline)
 		return (NULL);
 	if (!ft_build_rest(cache, newline))
 	{
+		*cache = NULL;
 		free(line);
 		return (NULL);
 	}
@@ -98,7 +99,10 @@ char	*ft_build_rest(char **cache, int newline)
 		i++;
 	rest = ft_calloc(i + 1, sizeof(char));
 	if (!rest)
+	{
+		free (*cache);
 		return (NULL);
+	}
 	j = 0;
 	while (j < i)
 	{
